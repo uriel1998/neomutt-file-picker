@@ -26,6 +26,18 @@ macro compose A "<shell-escape>bash $HOME/.config/mutt/filepicker -m<enter><ente
 ```
 3. Now, on the email sending screen (when you already wrote the text and saved it) type `A` instead of standard `a` to call the script. The file manager should appear. Choose files that you want to attach (tag them if multiple files) and hit Enter. Hit Enter twice more when asked. 
 
+
+If you wish to bind it to a key in tmux to invoke (for example, to select and paste a filename), use the following in your `tmux.conf`:
+
+```
+unbind e
+bind e if-shell -b '/path/to/filepicker -l | xclip ' "send-keys ''"
+```
+
+Or if you'd rather, without `-l | xclip` and just have your program read the filename from
+`$XDG_CONFIG_DIR/wombat_picker_tmp` (probably `${HOME}/.config/wombat_picker_tmp` )  Or maybe even just with the `-l` switch, depending on what works with your flow.
+
+
 ## Saving attachments
 
 1. Copy the `dirpicker` file to your `.config/mutt` or wherever is your config directory.
