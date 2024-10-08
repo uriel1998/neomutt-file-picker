@@ -3,6 +3,17 @@
 - Attach files to your emails in [NeoMutt](https://github.com/neomutt/) using [Ranger](https://github.com/ranger/ranger) or [Vifm](https://github.com/vifm) as your file manager.
 - Choose a directory to store attachments with Ranger or Vifm
 
+
+filepicker options:
+
+-h show help
+-f : Choose fzf as your picker 
+-fd DIRECTORY : specify starting directory for fzf
+-n : use nnn as picker
+-r : use ranger as picker
+-v : use vifm as picker
+-m : process for mutt attachments (otherwise just puts filename)
+
 The main script is based on the [this topic](https://www.reddit.com/r/commandline/comments/cbxvdf/combine_neomutt_with_ranger/) and improved to allow attaching mulptiple files with spaces in the name and path.
 
 ## Attaching files
@@ -11,7 +22,7 @@ The main script is based on the [this topic](https://www.reddit.com/r/commandlin
 2. Add the following line to your `.muttrc` so that you can attach files with `A`
 
 ```
-macro compose A "<shell-escape>bash $HOME/.config/mutt/filepicker<enter><enter-command>source $HOME/.config/mutt/tmpfile<enter><shell-escape>bash $HOME/.config/mutt/filepicker clean<enter>" "Attach with your file manager"
+macro compose A "<shell-escape>bash $HOME/.config/mutt/filepicker -m<enter><enter-command>source $HOME/.config/mutt/tmpfile<enter><shell-escape>bash $HOME/.config/mutt/filepicker -c<enter>" "Attach with your file manager"
 ```
 3. Now, on the email sending screen (when you already wrote the text and saved it) type `A` instead of standard `a` to call the script. The file manager should appear. Choose files that you want to attach (tag them if multiple files) and hit Enter. Hit Enter twice more when asked. 
 
