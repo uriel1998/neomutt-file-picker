@@ -6,7 +6,7 @@
 LOUD=0
 SCRIPTDIR="$(dirname $(readlink -f "$0"))"
 CONFIGDIR=${XDG_CONFIG_HOME:-$HOME/.config}
-tmpfile="${CONFIGDIR}"/wombat_picker_tmp  #why? because WHO ELSE IS GOING TO CHOOSE THIS NAME?
+tmpfile="${CONFIGDIR}"/wombat_filepicker_tmp  #why? because WHO ELSE IS GOING TO CHOOSE THIS NAME?
 PICKER=""
 FZF_DIR="${HOME}" # by default
 MUTT_PROCESSING=0

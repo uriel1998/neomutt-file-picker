@@ -1,12 +1,96 @@
 #!/bin/sh
 
-tmpfile=$HOME/.config/mutt/tmpfile
-    
-if \[ -z "$1" \]; then
-    ranger --choosedir $tmpfile &&    # Use Ranger
-    # vifm --choose-dir $tmpfile &&    # Use Vifm
-    sed -i 's/ /^V /g' $tmpfile &&
-    echo "$(awk 'BEGIN {printf "%s", "push "} {printf "%s", "<save-entry>\""$0"\"<enter>"}'  $tmpfile)" > $tmpfile
-elif \[ $1 == "clean" \]; then
-    rm $tmpfile
+#!/bin/sh
+
+# I want to make this a bit more agnostic
+# also want to make a version that's not mutt-specific
+# and lets you choose your picker
+LOUD=0
+SCRIPTDIR="$(dirname $(readlink -f "$0"))"
+CONFIGDIR=${XDG_CONFIG_HOME:-$HOME/.config}
+tmpfile="${CONFIGDIR}"/wombat_dirpicker_tmp  #why? because WHO ELSE IS GOING TO CHOOSE THIS NAME?
+PICKER=""
+FZF_DIR="${HOME}" # by default
+MUTT_PROCESSING=0
+# if you use devour, you MUST use a tempfile to capture output
+
+if [ ! -f "${tmpfile}" ];then
+    touch "${tmpfile}"
+fi    
+
+show_help () {
+echo "-c clean"
+echo "    -f fzf"
+    echo "-fd [DIR] starting dir for fzf"
+    echo "-h help text"
+    echo "-m mutt/neomutt (process tempfile for neomutt/mutt sourcing)"
+    echo "-n nnn"
+    echo "-r ranger"
+    echo "-v vifm"
+    echo "-l  output to stdin"
+
+}    
+
+# its like this so the arguments (save for fzf_dir) are not positional. Requires 
+# a bit of redundancy on my part here, but hey. 
+
+while [ $# -gt 0 ]; do
+option="$1"
+    case $option in
+    -l) LOUD=1
+        shift
+        ;;
+    -c) clean
+        rm $tmpfile
+        exit
+        ;;
+    -h) show_help
+        exit
+        ;;
+    -f) PICKER="fzf"
+        shift
+        ;;
+    -fd) shift
+        FZF_DIR="${1}"
+        shift
+        ;;
+    -m) MUTT_PROCESSING=1 #process for file attachment by mutt/neomutt
+        shift
+        ;;
+    -n) PICKER="nnn"
+        shift
+        ;;
+    -r) PICKER="ranger"
+        shift
+        ;;
+    -v) PICKER="vifm"
+        shift
+        ;;
+    esac    
+done    
+
+#TODO: test for default picker here?
+
+if [ "$PICKER" = "" ];then 
+    PICKER="nnn"
 fi
+
+case $PICKER in
+    # Note - for nnn, select the dir with +, then exit
+    nnn) nnn -p "${tmpfile}" ;;
+    vifm) vifm --choose-dir "${tmpfile}" ;;
+    ranger) ranger --choosedir "${tmpfile}" ;;
+    fzf) find ${FZF_DIR} -type d | fzf > "${tmpfile}"
+esac
+
+# I think this cleans off any extra crap? 
+sed -i 's/ /^V /g' $tmpfile 
+
+if [ $MUTT_PROCESSING -eq 1 ];then
+    echo "$(awk 'BEGIN {printf "%s", "push "} {printf "%s", "<attach-file>\""$0"\"<enter>"}'  ${tmpfile})" > "${tmpfile}"
+fi
+
+if [ $LOUD -eq 1 ];then
+    cat "${tmpfile}"
+fi
+# and we're out!
