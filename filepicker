@@ -1,5 +1,14 @@
 #!/bin/sh
 
+##############################################################################
+#
+#  My file picker for neomutt (and more)
+#  Derived from https://github.com/anufrievroman/neomutt-file-picker
+#  modified by Steven Saus 2024
+#  Licensed under the MIT license
+#
+##############################################################################
+
 # I want to make this a bit more agnostic
 # also want to make a version that's not mutt-specific
 # and lets you choose your picker
